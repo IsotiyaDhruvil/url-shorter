@@ -1,10 +1,12 @@
+require("dotenv").config();
+
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
-const { connectmongo } = require("./connection");
+const mongoose = require("mongoose");
 const {checkauthorization,restrictTo}= require("./middleware/auth");
 const session = require("express-session");
-
+const mongoose = require("mongoose");
 
 const Url = require("./models/url");
 
@@ -58,7 +60,11 @@ app.use("/url",restrictTo(["USER", "ADMIN"]), urlRouter);
 app.use("/user", userRouter);
 app.use("/",checkauthorization,staticRouter);
 
-connectmongo("mongodb://localhost:27017/urlshorter");
+console.log("MONGO_URL exists:", !!process.env.MONGO_URL);
+mongoose.connect(process.env.MONGO_URL)
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB error:", err));
+
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
