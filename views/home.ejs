@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UltraShort | High-Performance Links</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <style>
+        :root {
+            --primary: #007aff;
+            --bg: #f5f7fb;
+            --glass: rgba(255, 255, 255, 0.7);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg);
+            color: #1d1d1f;
+        }
+
+        /* Ambient Background Shadows */
+        .ambient-glow {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 122, 255, 0.08) 0%, rgba(255, 255, 255, 0) 70%);
+            top: -200px;
+            left: -100px;
+            z-index: -1;
+        }
+
+        /* Glass Cards */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.04);
+        }
+
+        .nav-glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        /* Input Styling */
+        .smart-input {
+            border: 0.5px solid #007bff53;
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 20px;
+            transition: 0.3s;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .smart-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+            outline: none;
+        }
+
+        .btn-apple {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            border-radius: 20px;
+            padding: 0.8rem 2rem;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-apple:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        /* Analytics Specifics */
+        .stat-circle {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            color: white;
+        }
+
+        .step-line {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 20px;
+        }
+
+        .step-dot {
+            width: 10px;
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 50%;
+            margin-top: 6px;
+        }
+
+        .step-dot.active {
+            background: var(--primary);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.15);
+        }
+
+        .step-connector {
+            width: 2px;
+            flex-grow: 1;
+            background: #f1f5f9;
+            margin: 4px 0;
+        }
+
+        .extra-small {
+            font-size: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .trend-up {
+            color: #34c759;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .hover-link:hover {
+            color: var(--primary) !important;
+            padding-left: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .extra-small {
+            font-size: 0.75rem;
+        }
+
+        .animate-pulse {
+            width: 8px;
+            height: 8px;
+            display: inline-block;
+            box-shadow: 0 0 0 rgba(25, 135, 84, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(25, 135, 84, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(25, 135, 84, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(25, 135, 84, 0);
+            }
+        }
+
+        .grayscale {
+            filter: grayscale(100%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient-glow"></div>
+
+    <nav class="navbar navbar-expand-lg sticky-top nav-glass py-3">
+
+        <div class="container">
+            <a class="navbar-brand fw-800 text-primary fs-3" href="/">UltraShort.</a>
+
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <% if (user) { %>
+
+                    <div class="dropdown">
+                        <button
+                            class="btn d-flex align-items-center bg-white border rounded-pill px-3 py-1 dropdown-toggle"
+                            type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="<%= user.profileImage && user.profileImage !== '' 
+                ? user.profileImage 
+                : 'https://ui-avatars.com/api/?name=' + user.name + '&background=007aff&color=fff' %>"
+                                class="rounded-circle me-2" width="28" height="28" />
+                            <span class="small fw-bold">
+                                <%= user.name %>
+                            </span>
+                        </button>
+
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2">
+                            <!-- Upload profile image -->
+                            <li>
+                                <form action="/user/upload" method="post" enctype="multipart/form-data" class="px-2">
+                                    <input type="hidden" name="userId" value="<%= user._id %>" />
+                                    <label class="dropdown-item d-flex align-items-center gap-2"
+                                        style="cursor:pointer;">
+                                        <i class="bi bi-camera"></i>
+                                        Change Photo
+                                        <input type="file" name="profile-img" hidden onchange="this.form.submit()" />
+                                    </label>
+                                </form>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <!-- Logout -->
+                            <li>
+                                <a href="/user/logout"
+                                    class="dropdown-item d-flex align-items-center gap-2 text-danger">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    Log out
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <% } else { %>
+
+                        <a href="/login" class="text-decoration-none text-dark fw-500">Log In</a>
+                        <a href="/signup" class="btn btn-apple">Sign Up</a>
+
+                        <% } %>
+            </div>
+
+        </div>
+    </nav>
+
+    <div class="container py-5">
+        <div class="row text-center mb-5 mt-4">
+            <div class="col-lg-8 mx-auto">
+                <h1 class="display-4 fw-800 mb-3" style="letter-spacing: -1.5px;">Shorten links. <span
+                        class="text-primary">Measure results.</span></h1>
+                <p class="text-muted fs-5 mb-5">Professional-grade URL management for creators and brands.</p>
+
+                <div class="glass-panel p-4 p-md-5">
+                    <form action="/url" method="post" class="row g-3">
+                        <div class="col-md-9">
+                            <input type="url" name="url" class="form-control smart-input w-100"
+                                placeholder="https://your-long-website-address.com/..." required>
+                        </div>
+                        <div class="col-md-3 d-grid">
+                            <button class="btn btn-apple">Shorten Now</button>
+                        </div>
+                    </form>
+
+                    <% if (typeof id !=='undefined' && id) { %>
+                        <div
+                            class="mt-4 p-3 animate-slide-up bg-primary bg-opacity-10 rounded-4 border border-primary border-opacity-20 d-flex justify-content-between align-items-center shadow-sm">
+                            <div class="text-start overflow-hidden me-2">
+                                <small class="text-primary fw-bold text-uppercase d-block"
+                                    style="font-size: 0.65rem; letter-spacing: 1px;">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Success! Your link is ready
+                                </small>
+                                <span id="shortUrlText" class="fw-bold fs-6 text-dark d-block text-truncate">
+                                    http://localhost:8001/url/<%= id %>
+                                </span>
+                            </div>
+                            <button type="button" class="btn btn-primary" onclick="copyToClipboard()">
+                                Copy
+                            </button>
+                        </div>
+                        <% } %>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="glass-panel p-2 mb-5 overflow-hidden">
+            <div class="p-4 border-bottom d-flex justify-content-between align-items-center bg-white bg-opacity-50">
+                <h5 class="fw-800 mb-0 d-flex align-items-center">
+                    <i class="bi bi-clock-history me-2 text-primary"></i>
+                    Your Link History
+                </h5>
+                <div class="d-flex align-items-center gap-2">
+                    <% if (user && user.role==="ADMIN" ) { %>
+                        <form action="/url/delete-all" method="POST"
+                            onsubmit="return confirm('⚠️ CRITICAL ACTION: Are you sure you want to delete EVERY link in the database? This cannot be undone.');">
+                            <button type="submit"
+                                class="btn btn-sm btn-outline-danger rounded-pill px-3 d-flex align-items-center">
+                                <i class="bi bi-trash3-fill me-1"></i>
+                                <span class="d-none d-md-inline">Delete All</span>
+                            </button>
+                        </form>
+                        <% } %>
+                            <button id="refreshBtn"
+                                onclick="this.disabled=true; this.innerHTML='<span class=\'spinner-border spinner-border-sm me-1\'></span> Refreshing...'; location.reload();"
+                                class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm">
+                                <i class="bi bi-arrow-clockwise"></i> Refresh
+                            </button>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th>No</th>
+                            <th class="ps-4">Link Hash</th>
+                            <th>Target Destination</th>
+                            <th>Clicks</th>
+                            <% if (user && user.role==="ADMIN" && urls.length>0) { %>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>role</th>
+                                <% } %>
+                                    <th class="text-end pe-4">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% urls.forEach((url)=> { %>
+                            <tr>
+                                <td>
+                                    <%= urls.indexOf(url)+1 %>
+                                </td>
+                                <td class="ps-4 fw-bold text-primary"><a href="/url/<%= url.shortId %>">
+                                        <%= url.shortId %>
+                                    </a></td>
+                                <td class="text-muted small text-truncate" style="max-width: 300px;">
+                                    <%= url.redirectUrl %>
+                                </td>
+                                <td><span class="badge rounded-pill bg-light text-dark border px-3">
+                                        <%= url.visitHistory.length %>
+                                    </span></td>
+                                <% if (user && user.role==="ADMIN" && urls.length>0) { %>
+                                    <td>
+                                        <%= url.createdBy?.name %>
+                                    </td>
+                                    <td>
+                                        <%= url.createdBy?.email %>
+                                    </td>
+                                    <td>
+                                        <%= url.createdBy?.role %>
+                                    </td>
+                                    <% } %>
+                                        <td class="text-end pe-4">
+                                            <form action="/url/delete/<%= url._id %>" method="post" class="d-inline">
+                                                <button class="btn btn-link text-danger"><i
+                                                        class="bi bi-trash3-fill"></i></button>
+                                            </form>
+                                        </td>
+                            </tr>
+                            <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="row py-5 mt-5 border-top">
+            <div class="col-lg-6">
+                <h2 class="fw-800 mb-4">How UltraShort processes your data</h2>
+                <p class="text-muted lead">We don't just redirect; we optimize the journey between the click and the
+                    landing page.</p>
+
+                <div class="d-flex gap-4 mb-4">
+                    <div class="stat-circle bg-white text-primary border shadow-sm"><i class="bi bi-lightning"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold">0ms Processing Delay</h6>
+                        <p class="text-muted small">Our proprietary logic ensures redirects happen at the speed of
+                            light, maintaining your SEO authority.</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-4">
+                    <div class="stat-circle bg-white text-primary border shadow-sm"><i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold">Safe Browsing Integration</h6>
+                        <p class="text-muted small">Every URL is checked against Google’s Safe Browsing API to ensure no
+                            malware reaches your users.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="p-4 glass-panel bg-white mt-4 mt-lg-0 h-100">
+                    <p class="fw-bold mb-4">
+                        <i class="bi bi-info-circle-fill text-primary me-2"></i>Link Routing Logic
+                    </p>
+
+                    <div class="d-flex mb-4">
+                        <div class="step-line me-3">
+                            <div class="step-dot"></div>
+                            <div class="step-connector"></div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small text-uppercase">1. Request Ingress</h6>
+                            <p class="extra-small text-muted mb-0">User clicks your short URL. Our global edge network
+                                intercepts the request in &lt;10ms.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex mb-4">
+                        <div class="step-line me-3">
+                            <div class="step-dot"></div>
+                            <div class="step-connector"></div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small text-uppercase">2. Analytics Sync</h6>
+                            <p class="extra-small text-muted mb-0">System logs click metadata (Device, Geo-location,
+                                Referrer) using asynchronous background workers.</p>
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div class="step-line me-3">
+                            <div class="step-dot active"></div>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1 small text-uppercase">3. Secure Handshake</h6>
+                            <p class="extra-small text-muted mb-0">Destination URL is retrieved and a 301-Permanent
+                                Redirect is issued to the target browser.</p>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 py-5 text-center">
+            <div class="col-md-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/8821/8821430.png" width="80" class="mb-4">
+                <h5 class="fw-bold">Dynamic QR Codes</h5>
+                <p class="text-muted small">Change the destination of your QR code even after it's printed. Perfect for
+                    dynamic marketing campaigns.</p>
+            </div>
+            <div class="col-md-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/8821/8821369.png" width="80" class="mb-4">
+                <h5 class="fw-bold">Smart Targeting</h5>
+                <p class="text-muted small">Redirect users based on their location or device type. iPhone users go to
+                    the App Store, others to the Play Store.</p>
+            </div>
+            <div class="col-md-4">
+                <img src="https://cdn-icons-png.flaticon.com/512/8821/8821453.png" width="80" class="mb-4">
+                <h5 class="fw-bold">API-First Design</h5>
+                <p class="text-muted small">Automate link creation with our high-throughput REST API. Generate thousands
+                    of links per second.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white border-top pt-5 pb-4 mt-5">
+        <div class="container">
+            <div class="row gy-4">
+
+                <div class="col-lg-4 col-md-12">
+                    <a class="navbar-brand fw-800 text-primary fs-4 d-flex align-items-center mb-3" href="/">
+                        <div class="bg-primary rounded-2 me-2 text-white d-flex align-items-center justify-content-center"
+                            style="width: 32px; height: 32px;">
+                            <i class="bi bi-link-45deg"></i>
+                        </div>
+                        UltraShort<span class="text-dark opacity-25">.</span>
+                    </a>
+                    <p class="text-muted small mb-4" style="max-width: 300px; line-height: 1.6;">
+                        The world's most advanced URL management infrastructure.
+                        Built for speed, security, and deep marketing insights.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="btn btn-sm btn-light rounded-circle"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="btn btn-sm btn-light rounded-circle"><i class="bi bi-github"></i></a>
+                        <a href="#" class="btn btn-sm btn-light rounded-circle"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-6 col-md-4">
+                    <h6 class="fw-bold small text-uppercase mb-3" style="letter-spacing: 1px;">Product</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Custom
+                                Domains</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">QR Code
+                                Generator</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">API Access</a>
+                        </li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Pricing</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-6 col-md-4">
+                    <h6 class="fw-bold small text-uppercase mb-3" style="letter-spacing: 1px;">Resources</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#"
+                                class="text-muted text-decoration-none hover-link">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Help Center</a>
+                        </li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Security
+                                Labs</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">System
+                                Status</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-6 col-md-4">
+                    <h6 class="fw-bold small text-uppercase mb-3" style="letter-spacing: 1px;">Legal</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Privacy
+                                Policy</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Terms of
+                                Service</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-link">Cookie
+                                Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h6 class="fw-bold small text-uppercase mb-3" style="letter-spacing: 1px;">System Health</h6>
+                    <div class="bg-light p-3 rounded-4 border">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="p-1 bg-success rounded-circle animate-pulse"></span>
+                            <span class="extra-small fw-bold">All Systems Live</span>
+                        </div>
+                        <p class="extra-small text-muted mb-0">Uptime: 99.99%</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr class="my-4 opacity-50">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="text-muted extra-small mb-0">
+                        &copy; 2026 UltraShort Tech Inc. Crafted with <i class="bi bi-heart-fill text-danger mx-1"></i>
+                        for a better web.
+                    </p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <span class="text-muted extra-small me-3">Global Edge Network: <strong
+                            class="text-dark">Active</strong></span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg"
+                        alt="Stripe" height="15" class="opacity-50 grayscale">
+                </div>
+            </div>
+        </div>
+    </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function copyToClipboard() {
+            const text = document.getElementById("shortUrlText").innerText;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert("✅ Copied!");
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const temp = document.createElement("input");
+            temp.value = text;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            alert("✅ Copied!");
+        }
+    </script>
+</body>
+
+</html>
