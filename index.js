@@ -6,7 +6,6 @@ const path = require("path");
 const mongoose = require("mongoose");
 const {checkauthorization,restrictTo}= require("./middleware/auth");
 const session = require("express-session");
-const mongoose = require("mongoose");
 
 const Url = require("./models/url");
 
@@ -45,7 +44,6 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  // ALWAYS get fresh user from DB
   const freshUser = await User.findById(req.session.user._id);
   res.locals.user = freshUser;
 
