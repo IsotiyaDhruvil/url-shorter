@@ -4,25 +4,23 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const mongoose = require("mongoose");
-const {checkauthorization,restrictTo}= require("./middleware/auth");
 const session = require("express-session");
 
-const Url = require("./models/url");
+const { checkauthorization, restrictTo } = require("./middleware/auth");
 
 const urlRouter = require("./routes/url");
 const staticRouter = require("./routes/static");
 const userRouter = require("./routes/user");
 
+const User = require("./models/user");
+
 const app = express();
-const PORT = 8001;
+const PORT = process.env.PORT || 8001;
 
-
-
-
+/* -------------------- MIDDLEWARES -------------------- */
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
 
 app.use(
   session({
@@ -32,11 +30,10 @@ app.use(
   })
 );
 
-app.use(checkauthorization);
-
 app.use("/uploads", express.static("uploads"));
 
-const User = require("./models/user");
+/* -------------------- AUTH MIDDLEWARE -------------------- */
+app.use(checkauthorization);
 
 app.use(async (req, res, next) => {
   if (!req.session.user) {
@@ -44,26 +41,43 @@ app.use(async (req, res, next) => {
     return next();
   }
 
-  const freshUser = await User.findById(req.session.user._id);
-  res.locals.user = freshUser;
+  try {
+    const freshUser = await User.findById(req.session.user._id);
+    res.locals.user = freshUser;
+  } catch (err) {
+    res.locals.user = null;
+  }
 
   next();
 });
 
-
-app.set("view engine","ejs");
+/* -------------------- VIEW ENGINE -------------------- */
+app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
-app.use("/url",restrictTo(["USER", "ADMIN"]), urlRouter);    
+/* -------------------- ROUTES -------------------- */
+app.use("/url", restrictTo(["USER", "ADMIN"]), urlRouter);
 app.use("/user", userRouter);
-app.use("/",checkauthorization,staticRouter);
+app.use("/", staticRouter);
+
+/* -------------------- DATABASE + SERVER START -------------------- */
 
 console.log("MONGO_URL exists:", !!process.env.MONGO_URL);
-mongoose.connect(process.env.MONGO_URL)
-  .then(() => console.log("MongoDB connected"))
-  .catch(err => console.error("MongoDB error:", err));
 
+// IMPORTANT: disable buffering
+mongoose.set("bufferCommands", false);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+mongoose
+  .connect(process.env.MONGO_URL, {
+    dbName: "urlshorter",
+  })
+  .then(() => {
+    console.log("MongoDB connected");
+
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("MongoDB connection failed:", err);
+  });
