@@ -17,8 +17,7 @@ const upload = multer({ storage: storage });
 router.post("/",handlecreateUser);
 router.post("/login",handlelogin);
 router.get("/logout", logoutUser);
-router.post("/upload", upload.single("profile-img"),async(req,res)=>{
-  
-});
+
+router.post("/upload", upload.single("profile-img"), uploadProfileImage);
 
 module.exports = router;

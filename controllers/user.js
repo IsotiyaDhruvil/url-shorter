@@ -42,6 +42,7 @@ async function logoutUser(req,res){
 async function uploadProfileImage(req,res){
      if (!req.file) return res.redirect("/");
 
+     const userId = req.session.user?._id;
   await User.findByIdAndUpdate(req.body.userId, {
     profileImage: `/uploads/${req.file.filename}`
   });
